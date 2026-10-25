@@ -27,7 +27,7 @@ export function generateReportTemplate(dto: CreateReportDto, photoUrl: string): 
     <tbody>${rows}</tbody>
   </table>
   <p><img src="${escapeHtml(photoUrl)}" alt="Foto de la fuga" style="display:block;max-width:100%;width:640px;height:auto;margin-top:16px;"></p>
-  <p>AguaFix · Aviso de reporte ciudadano</p>
+  <p>AguaFix · Aviso de reporte ciudadano (Version 2)</p>
 </body>
 </html>`;
 }
