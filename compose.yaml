@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    image: ${DOCKER_USER}/aguafix-api:latest
+    env_file: .env
+    environment:
+      DB_HOST: db
+    command: ["npx", "typeorm", "migration:run", "-d", "dist/database/data-source.js"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    image: ${DOCKER_USER}/aguafix-api:latest
+    env_file: .env
+    environment:
+      DB_HOST: db
+    ports:
+      - "${PORT:-3000}:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  pgdata:
